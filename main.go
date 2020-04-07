@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/rs/cors"
@@ -79,7 +80,12 @@ func main() {
 	})
 	handler := c.Handler(mux)
 
-	port := "8000"
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "8000"
+	}
+
 	log.Infof("server running at %s", port)
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), handler); err != nil {
