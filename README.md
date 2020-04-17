@@ -1,5 +1,7 @@
 # CORS Proxy
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/tarasyarema/cors-proxy)](https://goreportcard.com/report/github.com/tarasyarema/cors-proxy)
+
 ## Usage
 
 1. `docker pull tarasyarema/cors-proxy:latest`
