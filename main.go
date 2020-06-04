@@ -25,15 +25,21 @@ func corsProxy(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	reqURL := r.URL.Query().Get("url")
+	fmt.Println(r.URL.Query())
+
+	q := r.URL.Query()
+	reqURL := q.Get("url")
 
 	if reqURL == "" {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
 
+	q.Del("url")
+	reqURL = fmt.Sprintf("%s?%s", reqURL, q.Encode())
+
 	client := &http.Client{
-		Timeout: 4 * time.Second,
+		Timeout: 10 * time.Second,
 	}
 
 	newReq, err := http.NewRequest(r.Method, reqURL, r.Body)
@@ -70,7 +76,7 @@ func corsProxy(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/cors-proxy", corsProxy)
+	mux.HandleFunc("/", corsProxy)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -83,7 +89,7 @@ func main() {
 	port := os.Getenv("PORT")
 
 	if port == "" {
-		port = "8000"
+		port = "8080"
 	}
 
 	log.Infof("server running at %s", port)
