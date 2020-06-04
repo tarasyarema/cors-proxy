@@ -25,8 +25,6 @@ func corsProxy(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	fmt.Println(r.URL.Query())
-
 	q := r.URL.Query()
 	reqURL := q.Get("url")
 
