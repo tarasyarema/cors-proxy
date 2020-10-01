@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"time"
@@ -20,6 +21,21 @@ func logReq(r *http.Request, t time.Time) {
 	log.Infof("%s %s %s - %s", r.Method, r.URL.EscapedPath(), r.RemoteAddr, time.Since(t))
 }
 
+func twilioCallback(w http.ResponseWriter, r *http.Request) {
+	defer logReq(r, time.Now())
+
+	defer r.Body.Close()
+
+	if b, err := ioutil.ReadAll(r.Body); err != nil {
+		log.Infoln("Error parsing body:", err.Error())
+	} else {
+		log.Infoln("Body:", string(b))
+	}
+
+	log.Infoln("Query:", r.Form.Encode())
+
+	w.WriteHeader(http.StatusNoContent)
+}
 func corsProxy(w http.ResponseWriter, r *http.Request) {
 	defer logReq(r, time.Now())
 
@@ -75,6 +91,7 @@ func corsProxy(w http.ResponseWriter, r *http.Request) {
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", corsProxy)
+	mux.HandleFunc("/twilio/", twilioCallback)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
